@@ -458,6 +458,36 @@
       </build>
     </profile>
 
+    <profile>
+      <id>noauth</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-war-plugin</artifactId>
+            <configuration>
+              <webXml>${project.basedir}/src/noauth/web.xml</webXml>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <profile>
+      <id>ispn-remote</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.infinispan</groupId>
+          <artifactId>infinispan-cachestore-remote</artifactId>
+          <version>${infinispan.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.infinispan</groupId>
+          <artifactId>infinispan-client-hotrod</artifactId>
+          <version>${infinispan.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    
   </profiles>
 
 </project>
