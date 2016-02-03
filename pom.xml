@@ -472,22 +472,6 @@
       </build>
     </profile>
     
-    <profile>
-      <id>ispn-remote</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.infinispan</groupId>
-          <artifactId>infinispan-cachestore-remote</artifactId>
-          <version>${infinispan.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.infinispan</groupId>
-          <artifactId>infinispan-client-hotrod</artifactId>
-          <version>${infinispan.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    
   </profiles>
 
 </project>
