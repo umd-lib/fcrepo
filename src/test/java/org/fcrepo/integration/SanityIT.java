@@ -1,9 +1,11 @@
 /*
- * Copyright 2015 DuraSpace, Inc.
+ * Licensed to DuraSpace under one or more contributor license agreements.
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * DuraSpace licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -102,7 +104,7 @@ public class SanityIT {
     }
 
     @Test
-    public void doSanityTranform() throws IOException {
+    public void doSanityPost() throws IOException {
         final HttpPost post = new HttpPost(serverAddress + "rest/");
         setAdminAuth(post);
         final HttpResponse responsePost = client.execute(post);
@@ -112,7 +114,7 @@ public class SanityIT {
         assertNotNull("Location header was null!", locationHeader);
 
         final String location = locationHeader.getValue();
-        final HttpGet get = new HttpGet(location + "/fcr:transform/default");
+        final HttpGet get = new HttpGet(location);
         setAdminAuth(get);
         assertEquals(OK.getStatusCode(), getStatus(get));
     }

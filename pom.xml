@@ -3,10 +3,10 @@
   <parent>
     <groupId>org.fcrepo</groupId>
     <artifactId>fcrepo</artifactId>
-    <version>4.5.1</version>
+    <version>4.7.0-SNAPSHOT</version>
   </parent>
   <artifactId>fcrepo-webapp-plus</artifactId>
-  <version>4.5.1</version>
+  <version>4.7.0-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>fcrepo-webapp-plus</name>
   <description>Fedora Repository webapp plus additional modules</description>
@@ -17,6 +17,8 @@
     <audit.build.name />
     <audit.auth.context>${project.basedir}/src/audit/dummy-resources</audit.auth.context>
     <audit.auth.excludes />
+    <connector.build.name />
+    <fcrepo.modeshape.configuration>classpath:/config/file-simple/repository.json</fcrepo.modeshape.configuration>
     <!-- integration test properties -->
     <fcrepo.test.context.path>/</fcrepo.test.context.path>
   </properties>
@@ -40,32 +42,27 @@
     <developerConnection>scm:git:git@github.com:fcrepo4-exts/${project_name}.git
     </developerConnection>
     <url>https://github.com/fcrepo4-exts/${project_name}</url>
-    <tag>fcrepo-webapp-plus-4.5.1</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <dependencies>
     <dependency>
       <groupId>org.fcrepo</groupId>
       <artifactId>fcrepo-webapp</artifactId>
-      <version>4.5.1</version>
+      <version>4.7.0-SNAPSHOT</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.fcrepo</groupId>
       <artifactId>fcrepo-webapp</artifactId>
-      <version>4.5.1</version>
+      <version>4.7.0-SNAPSHOT</version>
       <type>jar</type>
       <classifier>classes</classifier>
     </dependency>
     <dependency>
       <groupId>org.fcrepo</groupId>
       <artifactId>fcrepo-mint</artifactId>
-      <version>4.5.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.fcrepo.transform</groupId>
-      <artifactId>fcrepo-transform</artifactId>
-      <version>4.5.1</version>
+      <version>4.7.0-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -86,14 +83,14 @@
     <dependency>
       <groupId>org.fcrepo</groupId>
       <artifactId>fcrepo-http-commons</artifactId>
-      <version>4.5.1</version>
+      <version>4.7.0-SNAPSHOT</version>
       <scope>test</scope>
       <type>test-jar</type>
     </dependency>
     <dependency>
       <groupId>org.fcrepo</groupId>
       <artifactId>fcrepo-http-api</artifactId>
-      <version>4.5.1</version>
+      <version>4.7.0-SNAPSHOT</version>
       <scope>test</scope>
       <type>test-jar</type>
     </dependency>
@@ -222,7 +219,7 @@
                 </systemProperty>
 
                 <systemProperty>
-                  <name>fcrepo.activemq.dir</name>
+                  <name>fcrepo.activemq.directory</name>
                   <value>${project.build.directory}/active-mq</value>
                 </systemProperty>
 
@@ -240,6 +237,10 @@
                   <value>${auth.enabled:false}</value>
                 </systemProperty>
 
+                <systemProperty>
+                  <name>fcrepo.modeshape.configuration</name>
+                  <value>${fcrepo.modeshape.configuration}</value>
+                </systemProperty>
               </systemProperties>
 
             </configuration>
@@ -296,7 +297,7 @@
         <dependency>
           <groupId>org.fcrepo</groupId>
           <artifactId>fcrepo-audit</artifactId>
-          <version>4.5.1</version>
+          <version>4.7.0-SNAPSHOT</version>
         </dependency>
       </dependencies>
       <build>
@@ -310,10 +311,47 @@
     </profile>
 
     <profile>
+      <id>connector</id>
+      <properties>
+         <connector.build.name>-connector</connector.build.name>
+      </properties>
+      <dependencies>
+         <dependency>
+            <groupId>org.fcrepo</groupId>
+            <artifactId>fcrepo-connector-file</artifactId>
+            <version>4.7.0-SNAPSHOT</version>
+         </dependency>
+      </dependencies>
+      <build>
+         <finalName>${project.name}${audit.build.name}-connector-${project.version}</finalName>
+         <resources>
+          <resource>
+            <directory>${audit.auth.context}</directory>
+          </resource>
+        </resources>
+        <plugins>
+          <plugin>
+            <artifactId>maven-war-plugin</artifactId>
+            <configuration>
+              <warSourceExcludes>${audit.auth.excludes}</warSourceExcludes>
+              <overlays>
+                <overlay>
+                  <groupId>org.fcrepo</groupId>
+                  <artifactId>fcrepo-webapp</artifactId>
+                </overlay>
+              </overlays>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  
+    <profile>
       <id>xacml</id>
       <properties>
         <profile.src.dir>${project.basedir}/src/xacml</profile.src.dir>
         <auth.enabled>true</auth.enabled>
+        <fcrepo.modeshape.configuration>classpath:/config/servlet-auth/repository.json</fcrepo.modeshape.configuration>
       </properties>
       <dependencies>
         <dependency>
@@ -324,7 +362,7 @@
       </dependencies>
 
       <build>
-        <finalName>${project.name}-xacml${audit.build.name}-${project.version}</finalName>
+        <finalName>${project.name}-xacml${audit.build.name}${connector.build.name}-${project.version}</finalName>
         <resources>
           <resource>
             <directory>${profile.src.dir}/resources</directory>
@@ -387,6 +425,7 @@
       <properties>
         <profile.src.dir>${project.basedir}/src/rbacl</profile.src.dir>
         <auth.enabled>true</auth.enabled>
+        <fcrepo.modeshape.configuration>classpath:/config/servlet-auth/repository.json</fcrepo.modeshape.configuration>
       </properties>
       <dependencies>
         <dependency>
@@ -396,7 +435,7 @@
         </dependency>
       </dependencies>
       <build>
-        <finalName>${project.name}-rbacl${audit.build.name}-${project.version}</finalName>
+        <finalName>${project.name}-rbacl${audit.build.name}${connector.build.name}-${project.version}</finalName>
         <resources>
           <resource>
             <directory>${audit.auth.context}</directory>
@@ -425,6 +464,7 @@
       <properties>
         <profile.src.dir>${project.basedir}/src/webac</profile.src.dir>
         <auth.enabled>true</auth.enabled>
+        <fcrepo.modeshape.configuration>classpath:/config/servlet-auth/repository.json</fcrepo.modeshape.configuration>
       </properties>
       <activation>
         <activeByDefault>true</activeByDefault>
@@ -433,11 +473,11 @@
         <dependency>
           <groupId>org.fcrepo</groupId>
           <artifactId>fcrepo-module-auth-webac</artifactId>
-          <version>4.5.1</version>
+          <version>4.7.0-SNAPSHOT</version>
         </dependency>
       </dependencies>
       <build>
-        <finalName>${project.name}-webac${audit.build.name}-${project.version}</finalName>
+        <finalName>${project.name}-webac${audit.build.name}${connector.build.name}-${project.version}</finalName>
         <resources>
           <resource>
             <directory>${audit.auth.context}</directory>
@@ -476,5 +516,6 @@
     </profile>
     
   </profiles>
+
 
 </project>

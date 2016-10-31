@@ -15,7 +15,7 @@
 
     <bean name="modeshapeRepofactory"
         class="org.fcrepo.kernel.modeshape.spring.ModeShapeRepositoryFactoryBean"
-        p:repositoryConfiguration="${fcrepo.modeshape.configuration:classpath:/config/repository.json}"
+        p:repositoryConfiguration="${fcrepo.modeshape.configuration}"
         depends-on="authenticationProvider"/>
 
     <!-- Optional PrincipalProvider that will inspect the request header, "some-header", for user role values -->
@@ -38,6 +38,9 @@
       <ref bean="containerRolesProvider"/>
       <ref bean="headerProvider"/>
     </util:set>
+
+    <!-- Add the fcr:accessroles resource -->
+    <bean name="accessRolesResources" class="org.fcrepo.auth.roles.common.AccessRolesResources"/>
 
     <bean name="fad" class="org.fcrepo.auth.roles.basic.BasicRolesAuthorizationDelegate"/>
 
