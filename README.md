@@ -1,3 +1,6 @@
+**This repository has been archived. See <https://github.com/umd-lib/umd-fcrepo-webapp> 
+for the current University of Maryland Libraries Fedora 4 webapp.**
+
 fcrepo-webapp-plus
 ==================
 
